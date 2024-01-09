@@ -1,1 +1,4 @@
 node_modules
+
+# don't commit sqlite db files by default
+*.db

@@ -1,0 +1,14 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:dev.db"
+}
+
+model widgets {
+  id   Int     @id @unique(map: "sqlite_autoindex_widgets_1") @default(autoincrement())
+  name String
+  date Decimal
+}
