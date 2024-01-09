@@ -89,6 +89,47 @@ app.get('/widget', (req: Request, res: Response<ListWidgetsResponse>) => {
   res.json(listWidgetsResponse);
 });
 
+// Update
+
+// TODO: implement
+
+// Delete
+
+
+interface DeleteWidgetRequest {
+  id: string;
+}
+
+interface DeleteWidgetResponse {
+  status: string;
+}
+
+
+app.delete('/widget', (req: Request<{}, {}, DeleteWidgetRequest>, res: Response<DeleteWidgetResponse>) => {
+  const id = parseInt(req.query.id as string)
+
+  // Check if the widget exists
+  if (widgetsMap.has(id)) {
+    // Delete the widget from the map
+    widgetsMap.delete(id);
+
+    // Create a response object
+    const deleteWidgetResponse: DeleteWidgetResponse = {
+      status: 'success'
+    };
+
+    // Send the response as JSON
+    res.json(deleteWidgetResponse);
+  } else {
+    // Create a response object
+    const deleteWidgetResponse: DeleteWidgetResponse = {
+      status: `failure; widget with id ${id} does not exist`
+    };
+
+    // Send the response as JSON
+    res.status(400).json(deleteWidgetResponse);
+  }
+});
 
 // begin listening
 
