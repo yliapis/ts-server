@@ -35,14 +35,14 @@ export const createWidget = (name: string): Widget => {
 
 // const updateWidget
 
-export const updateWidget = (id: number, name: string): Widget | undefined => {
+export const updateWidget = (id: number, name: string): Widget | null => {
   if (widgetsMap.has(id)) {
     const widget: Widget = widgetsMap.get(id)!
     widget.name = name
 
     return widget
   } else {
-    return undefined
+    return null
   }
 }
 
@@ -59,6 +59,6 @@ export const deleteWidget = (id: number): boolean => {
 
 // const getWidgets
 
-export const getWidgets = (): Widget[] => {
+export const listWidgets = (): Widget[] => {
   return Array.from(widgetsMap.values()).sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
 }

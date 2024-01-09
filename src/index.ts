@@ -7,7 +7,7 @@ import bodyParser from 'body-parser'
 import dotenv from 'dotenv'
 
 import type { Widget } from './widgetRepository'
-import { widgetsMap } from './widgetRepository'
+import { createWidget, deleteWidget, listWidgets, updateWidget } from './widgetRepository'
 
 dotenv.config()
 
@@ -34,16 +34,15 @@ interface CreateUpdateWidgetResponse {
 }
 
 app.post('/widget', (req: Request<unknown, unknown, CreateUpdateWidgetRequest>, res: Response<CreateUpdateWidgetResponse>) => {
-  const id = parseInt(req.query.id as string)
   const name = (req.query.name as string || '')
 
-  if (id) {
+  if (req.query.id !== undefined) {
+    const id = parseInt(req.query.id as string)
     // Check if the widget exists
-    if (widgetsMap.has(id)) {
-      // Update the widget
-      const widget: Widget = widgetsMap.get(id)!
-      widget.name = name
 
+    const widget = updateWidget(id, name)
+
+    if (widget !== null) {
       // Create a response object
       const createWidgetResponse: CreateUpdateWidgetResponse = {
         widget,
@@ -53,25 +52,12 @@ app.post('/widget', (req: Request<unknown, unknown, CreateUpdateWidgetRequest>, 
       // Send the response as JSON
       res.json(createWidgetResponse)
     } else {
-      // Create a response object
-      const createWidgetResponse: CreateUpdateWidgetResponse = {
+      res.status(400).json({
         status: `failure; widget with id ${id} does not exist`
-      }
-
-      // Send the response as JSON
-      res.status(400).json(createWidgetResponse)
+      })
     }
   } else {
-    const randomNumber: number = Math.floor(Math.random() * 1000000000000000)
-
-    const widget: Widget = {
-      id: randomNumber,
-      name,
-      createdAt: new Date()
-    }
-
-    // Insert the widget into the map using its id as the key
-    widgetsMap.set(widget.id, widget)
+    const widget = createWidget(name)
 
     // Create a response object
     const createWidgetResponse: CreateUpdateWidgetResponse = {
@@ -93,7 +79,7 @@ interface ListWidgetsResponse {
 
 app.get('/widget', (req: Request, res: Response<ListWidgetsResponse>) => {
   // Retrieve all widgets and sort them by insert time ascending
-  const allWidgets: Widget[] = Array.from(widgetsMap.values()).sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+  const allWidgets: Widget[] = listWidgets()
 
   // Create a response object
   const listWidgetsResponse: ListWidgetsResponse = {
@@ -118,25 +104,15 @@ interface DeleteWidgetResponse {
 app.delete('/widget', (req: Request<unknown, unknown, DeleteWidgetRequest>, res: Response<DeleteWidgetResponse>) => {
   const id = parseInt(req.query.id as string)
 
-  // Check if the widget exists
-  if (widgetsMap.has(id)) {
-    // Delete the widget from the map
-    widgetsMap.delete(id)
+  const success = deleteWidget(id)
 
-    // Create a response object
-    const deleteWidgetResponse: DeleteWidgetResponse = {
-      status: 'success'
-    }
-
-    // Send the response as JSON
-    res.json(deleteWidgetResponse)
+  if (success) {
+    res.json({ status: 'success' })
   } else {
-    // Create a response object
     const deleteWidgetResponse: DeleteWidgetResponse = {
       status: `failure; widget with id ${id} does not exist`
     }
 
-    // Send the response as JSON
     res.status(400).json(deleteWidgetResponse)
   }
 })
