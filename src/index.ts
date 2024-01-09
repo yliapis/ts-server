@@ -8,7 +8,6 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-
 // app setup
 
 const app: Express = express();
@@ -23,7 +22,7 @@ app.get('/', (req: Request, res: Response) => {
 
 const widgetsMap: Map<number, Widget> = new Map<number, Widget>();
 
-// Create
+// Create / Update
 
 interface Widget {
   id: number;
@@ -31,41 +30,67 @@ interface Widget {
   createdAt: Date;
 }
 
-interface CreateWidgetRequest {
+interface CreateUpdateWidgetRequest {
+  id?: string; // optional because it's only used for updates
   name: string;
 }
 
-interface CreateWidgetResponse {
+interface CreateUpdateWidgetResponse {
   widget?: Widget;
   status: string;
 }
 
-app.post('/widget', (req: Request<{}, {}, CreateWidgetRequest>, res: Response<CreateWidgetResponse>) => {
+app.post('/widget', (req: Request<{}, {}, CreateUpdateWidgetRequest>, res: Response<CreateUpdateWidgetResponse>) => {
 
+  const id = parseInt(req.query.id as string)
   const name = req.query.name || '';
 
-  const randomNumber: number = Math.floor(Math.random() * 1000000000000000)
+  if (id) {
+    // Check if the widget exists
+    if (widgetsMap.has(id)) {
+      // Update the widget
+      const widget: Widget = widgetsMap.get(id) as Widget;
+      widget.name = name as string;
 
-  const widget: Widget = {
-    id: randomNumber,
-    name: name as string,
-    createdAt: new Date()
+      // Create a response object
+      const createWidgetResponse: CreateUpdateWidgetResponse = {
+        widget: widget,
+        status: 'success'
+      };
+
+      // Send the response as JSON
+      res.json(createWidgetResponse);
+    } else {
+      // Create a response object
+      const createWidgetResponse: CreateUpdateWidgetResponse = {
+        status: `failure; widget with id ${id} does not exist`
+      };
+
+      // Send the response as JSON
+      res.status(400).json(createWidgetResponse);
+    }
+  } else {
+    const randomNumber: number = Math.floor(Math.random() * 1000000000000000)
+
+    const widget: Widget = {
+      id: randomNumber,
+      name: name as string,
+      createdAt: new Date()
+    }
+
+    // Insert the widget into the map using its id as the key
+    widgetsMap.set(widget.id, widget);
+
+    // Create a response object
+    const createWidgetResponse: CreateUpdateWidgetResponse = {
+      widget: widget,
+      status: 'success'
+    };
+
+    // Send the response as JSON
+    res.json(createWidgetResponse);
   }
-
-  // Insert the widget into the map using its id as the key
-  widgetsMap.set(widget.id, widget);
-
-  // Create a response object
-  const createWidgetResponse: CreateWidgetResponse = {
-    widget: widget,
-    status: 'success'
-  };
-
-  // Send the response as JSON
-  res.json(createWidgetResponse);
 });
-// Generate a random number with 16 digits
-;
 
 
 // Read
@@ -89,12 +114,7 @@ app.get('/widget', (req: Request, res: Response<ListWidgetsResponse>) => {
   res.json(listWidgetsResponse);
 });
 
-// Update
-
-// TODO: implement
-
 // Delete
-
 
 interface DeleteWidgetRequest {
   id: string;
@@ -103,7 +123,6 @@ interface DeleteWidgetRequest {
 interface DeleteWidgetResponse {
   status: string;
 }
-
 
 app.delete('/widget', (req: Request<{}, {}, DeleteWidgetRequest>, res: Response<DeleteWidgetResponse>) => {
   const id = parseInt(req.query.id as string)
