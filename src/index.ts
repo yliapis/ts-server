@@ -2,6 +2,8 @@
 
 // src/index.js
 import express, { Express, Request, Response } from "express";
+import bodyParser from 'body-parser';
+
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -10,6 +12,7 @@ dotenv.config();
 // app setup
 
 const app: Express = express();
+app.use(bodyParser.json());
 const port = process.env.PORT;
 
 app.get('/', (req: Request, res: Response) => {
@@ -21,10 +24,6 @@ app.get('/', (req: Request, res: Response) => {
 const widgets: Widget[] = [];
 
 // Create
-
-app.post('/widget', (req: Request, res: Response) => {
-  res.send('POST HTTP method on widget resource');
-});
 
 interface Widget {
   id: number;
@@ -43,7 +42,7 @@ interface CreateWidgetResponse {
 
 app.post('/widget', (req: Request<{}, {}, CreateWidgetRequest>, res: Response<CreateWidgetResponse>) => {
   // Access the request body
-  const { name } = req.body;
+  const { name } : CreateWidgetRequest = req.body;
 
   const randomNumber: number = Math.floor(Math.random() * 1000000000000000)
 
