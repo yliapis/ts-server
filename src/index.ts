@@ -21,7 +21,7 @@ app.get('/', (req: Request, res: Response) => {
 
 // internal storage; volatile db for now
 
-const widgets: Widget[] = [];
+const widgetsMap: Map<number, Widget> = new Map<number, Widget>();
 
 // Create
 
@@ -52,8 +52,8 @@ app.post('/widget', (req: Request<{}, {}, CreateWidgetRequest>, res: Response<Cr
     createdAt: new Date()
   }
 
-  // Add the widget to the list
-  widgets.push(widget);
+  // Insert the widget into the map using its id as the key
+  widgetsMap.set(widget.id, widget);
 
   // Create a response object
   const createWidgetResponse: CreateWidgetResponse = {
@@ -76,8 +76,8 @@ interface ListWidgetsResponse {
 }
 
 app.get('/widget', (req: Request, res: Response<ListWidgetsResponse>) => {
-  // Retrieve all widgets
-  const allWidgets: Widget[] = widgets;
+  // Retrieve all widgets and sort them by insert time ascending
+  const allWidgets: Widget[] = Array.from(widgetsMap.values()).sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 
   // Create a response object
   const listWidgetsResponse: ListWidgetsResponse = {
