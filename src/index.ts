@@ -6,6 +6,9 @@ import bodyParser from 'body-parser'
 
 import dotenv from 'dotenv'
 
+import type { Widget } from './widgetRepository'
+import { widgetsMap } from './widgetRepository'
+
 dotenv.config()
 
 // app setup
@@ -18,17 +21,7 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server')
 })
 
-// internal storage; volatile db for now
-
-const widgetsMap: Map<number, Widget> = new Map<number, Widget>()
-
 // Create / Update
-
-interface Widget {
-  id: number
-  name: string
-  createdAt: Date
-}
 
 interface CreateUpdateWidgetRequest {
   id?: string // optional because it's only used for updates
