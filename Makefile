@@ -8,3 +8,7 @@ install:
 	nvm install 16
 	nvm use 16
 	npm install
+
+lint:
+	@echo "Linting"
+	npm run lint
