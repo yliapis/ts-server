@@ -41,14 +41,14 @@ interface CreateWidgetResponse {
 }
 
 app.post('/widget', (req: Request<{}, {}, CreateWidgetRequest>, res: Response<CreateWidgetResponse>) => {
-  // Access the request body
-  const { name } : CreateWidgetRequest = req.body;
+
+  const name = req.query.name || '';
 
   const randomNumber: number = Math.floor(Math.random() * 1000000000000000)
 
   const widget: Widget = {
     id: randomNumber,
-    name: name,
+    name: name as string,
     createdAt: new Date()
   }
 
