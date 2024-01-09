@@ -1,12 +1,3 @@
-// import { MongoClient } from 'mongodb'
-// import dotenv from 'dotenv'
-
-// const mongodbUri = process.env.MONGODB_URI
-// const client = new MongoClient(mongodbUri)
-// await client.connect()
-
-// const db = client.db()
-
 export interface Widget {
   id: number
   name: string
