@@ -31,5 +31,5 @@ POST /widget id=$ID name=$NAME
 # Delete
 DELETE /widget id=$ID
 ```
-4. set up linting/formatting/etc [https://blog.logrocket.com/linting-typescript-eslint-prettier/](https://blog.logrocket.com/linting-typescript-eslint-prettier/)
+4. set up linting/formatting/etc [https://blog.logrocket.com/linting-typescript-eslint-prettier/](https://blog.logrocket.com/linting-typescript-eslint-prettier/) [DONE] (using just eslint for now)
 5. use actual db for persistence, ie sqlite
